@@ -28,8 +28,8 @@ right_enable.off()
 
 # Create motor controllers
 
-left_motor  = Motor ( LEFT_A,  LEFT_B, pwm = True)
-right_motor = Motor (RIGHT_A, RIGHT_B, pwm = True)
+left_motor  = Motor ( LEFT_A,  LEFT_B)
+right_motor = Motor (RIGHT_A, RIGHT_B)
 
 # All stop!
 
@@ -40,6 +40,12 @@ right_motor.stop ()
 
 left_enable.on()
 right_enable.on()
+
+left_motor.forward ()
+right_motor.forward ()
+
+time.sleep (5)
+sys.exit (0)
 
 # Set variables for the GPIO motor pins
 # pinMotorAForwards = 18
@@ -85,7 +91,7 @@ while True:
         try:
             pygame.joystick.init()
             # Attempt to setup the joystick
-            if pygame.joystick.get_count() < 1:
+            if pygame.joystick.get_count() == 0:
                 # No joystick attached, toggle the LED
                 print('No Joystick attached')
                 pygame.joystick.quit()
