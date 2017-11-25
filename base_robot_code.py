@@ -167,9 +167,9 @@ try:
                 else:
                     left_motor.backward (-driveLeft)
                 if driveRight >= 0:
-                    right_motor.backward (driveRight)
+                    right_motor.forward (driveRight)
                 else:
-                    right_motor.forward (-driveRight)
+                    right_motor.backward (-driveRight)
                     
                 #LeftMotor.speed((driveRight * maxPower)*100)
                 #RightMotor.speed((-driveLeft * maxPower)*100)
