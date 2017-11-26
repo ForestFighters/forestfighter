@@ -16,6 +16,7 @@ LOGGER = logging.getLogger(__name__)
 
 def main(amybot=True, camjambot=False):
     joystick = Joystick()
+    # if elsing this because the init methods of both classes do stuff with hardware, so best to only intiailise deliberately
     if amybot:
         bot = AmyBot()
     else:
@@ -26,14 +27,14 @@ def main(amybot=True, camjambot=False):
     interval = 0.0
 
     # Power settings
-    voltageIn = 6.0                        # Total battery voltage to the PicoBorg Reverse
-    voltageOut = 5.0 #* 0.95                # Maximum motor voltage, we limit it to 95% to allow the RPi to get uninterrupted power
+    voltage_in = 6.0                        # Total battery voltage to the PicoBorg Reverse
+    voltage_out = 5.0 #* 0.95                # Maximum motor voltage, we limit it to 95% to allow the RPi to get uninterrupted power
 
     # Setup the power limits
-    if voltageOut > voltageIn:
-        maxPower = 1.0
+    if voltage_out > voltage_in:
+        max_power = 1.0
     else:
-        maxPower = voltageOut / float(voltageIn)
+        max_power = voltage_out / float(voltage_in)
 
     # Setup pygame and wait for the joystick to become available
 
@@ -43,7 +44,7 @@ def main(amybot=True, camjambot=False):
         # Loop indefinitely
         while running:
             # Get the latest events from the system
-            hadEvent = False
+            had_event = False
             events = pygame.event.get()
             # Handle each event individually
             for event in events:
@@ -53,11 +54,11 @@ def main(amybot=True, camjambot=False):
                     break
                 elif event.type == pygame.JOYBUTTONDOWN:
                     # A button on the joystick just got pushed down
-                    hadEvent = True
+                    had_event = True
                 elif event.type == pygame.JOYAXISMOTION:
                     # A joystick has been moved
-                    hadEvent = True
-                if hadEvent:
+                    had_event = True
+                if had_event:
                     # Read axis positions (-1 to +1) + determine how much to move by
                     left_drive, right_drive = joystick.get_reading()
                     bot.move(left_drive, right_drive)

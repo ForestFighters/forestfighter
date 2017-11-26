@@ -62,9 +62,11 @@ class Joystick(object):
         return joystick
 
     def get_reading(self):
+        # get the base reading
         up_down = self.joystick.get_axis(self.axis_up_down)
         left_right = self.joystick.get_axis(self.axis_left_right)
 
+        # flip it if the axis are inverted
         if self.axis_up_down_inverted:
             up_down = -up_down
         if self.axis_left_right_inverted:
