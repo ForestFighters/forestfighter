@@ -6,4 +6,4 @@ Amy/Jim/Ellesha/Charlotte robot
 - CamJam edukit or the bot Jim gave Amy, I don't remember lols
 
 # How to run this
-`python base_motor_code.py --amybot` or `python base_motor_code.py --camjambot`
+`python base_robot_code.py --amybot` or `python base_robot_code.py --camjambot`
