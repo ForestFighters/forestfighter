@@ -30,7 +30,7 @@ class Robot(object):
             self.right_motor.backward (-right_drive)
 
 
-class CamJamBot(Robot):
+class CamJamBot(Robot): 
     def __init__(self):
         super().__init__(left_a_pin=10, left_b_pin=9, right_a_pin=8, right_b_pin=7)
 
