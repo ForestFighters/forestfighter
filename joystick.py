@@ -9,20 +9,21 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Joystick(object):
-    def __init__(self, axis_up_down=1,
-                 axis_up_down_inverted=False,
-                 axis_left_right=2,
-                 axis_left_right_inverted=False,
+    def __init__(self, 				  
+                 axis_left=3,
+                 axis_left_inverted=False,
+                 axis_right=1,
+                 axis_right_inverted=False,                
                  button_reset_epo=9,
                  button_slow=6,
                  slow_factor=0.5,
                  button_fast_turn=8):
         self.joystick = self.wait_on_joystick()
         self.joystick.init()
-        self.axis_up_down = axis_up_down
-        self.axis_up_down_inverted = axis_up_down_inverted
-        self.axis_left_right = axis_left_right
-        self.axis_left_right_inverted = axis_left_right_inverted
+        self.axis_left = axis_left
+        self.axis_left_inverted = axis_left_inverted
+        self.axis_right = axis_right
+        self.axis_right_inverted = axis_right_inverted
         self.button_reset_epo = button_reset_epo
         self.button_slow = button_slow
         self.slow_factor = slow_factor
@@ -63,27 +64,18 @@ class Joystick(object):
 
     def get_reading(self):
         # get the base reading
-        up_down = self.joystick.get_axis(self.axis_up_down)
-        left_right = self.joystick.get_axis(self.axis_left_right)
+        left = self.joystick.get_axis(self.axis_left)
+        right = self.joystick.get_axis(self.axis_right)
 
         # flip it if the axis are inverted
-        if self.axis_up_down_inverted:
-            up_down = -up_down
-        if self.axis_left_right_inverted:
-            left_right = -left_right
+        if self.axis_left_inverted:
+            left = -left
+        if self.axis_right_inverted:
+            right = -right
 
-        # Apply steering speeds
-        if not self.joystick.get_button(self.button_fast_turn):
-            left_right *= 0.5
-
-        drive_left = -up_down
-        drive_right = -up_down
-        if left_right < -0.05:
-            # Turning left
-            drive_left *= 1.0 + (2.0 * left_right)
-        elif left_right > 0.05:
-            # Turning right
-            drive_right *= 1.0 - (2.0 * left_right)
+        drive_left = left
+        drive_right = right
+        
         # Check for button presses
         if self.joystick.get_button(self.button_reset_epo):
             LOGGER.debug('reset')
@@ -91,9 +83,8 @@ class Joystick(object):
             drive_left *= self.slow_factor
             drive_right *= self.slow_factor
 
-
         if self.joystick.get_button(self.button_slow):
             drive_left *= self.slow_factor
             drive_right *= self.slow_factor
 
-        return drive_left, drive_left
+        return drive_left, drive_right
