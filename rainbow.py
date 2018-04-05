@@ -1,6 +1,11 @@
 import enum
 from picamera import PiCamera
 from time import sleep
+import logging
+
+
+LOGGER = logging.getLogger(__name__)
+
 
 class Colours(enum.Enum):
     RED = 0
@@ -35,9 +40,9 @@ class Rainbow(object):
 
     def rainbow(self):
         for colour in Colours:
-            print(colour.name)
+            LOGGER.debug(colour)
             sleep(2)
-            self.camera.capture('foo.jpg')
+            #self.camera.capture('foo.jpg')
             range_data = ranges[colour]
-            print(range_data)
+            LOGGER.debug(range_data)
 
