@@ -21,7 +21,7 @@ class Rainbow(object):
     order = []
     def __init__(self):
         self.camera = PiCamera()
-        self.camera.zoom = (0, 0, 640, 480)
+        self.camera.zoom = (0, 0, 0.5, 0.5)
         # Camera.set(CV_CAP_PROP_FORMAT, CV_8UC3);
         # Camera.set(CV_CAP_PROP_FRAME_WIDTH, 640); // 320
         # Camera.set(CV_CAP_PROP_FRAME_HEIGHT, 480); // 240
