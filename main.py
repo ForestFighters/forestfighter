@@ -14,6 +14,7 @@ L1_BUTTON = 6
 L2_BUTTON = 8
 R1_BUTTON = 7
 R2_BUTTON = 9
+INTERVAL = 0.0
 
 
 LOGGER = logging.getLogger(__name__)
@@ -66,7 +67,7 @@ class Controller(object):
                         # A button on the joystick just got pushed down
                         self.mode = event.button
                     self.modes[self.mode]()
-                time.sleep(interval)
+                time.sleep(INTERVAL)
 
         except KeyboardInterrupt:
             # CTRL+C exit, disable all drives
