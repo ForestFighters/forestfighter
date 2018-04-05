@@ -50,8 +50,8 @@ class Controller(Rainbow):
             max_power = 1.0
         else:
             max_power = voltage_out / float(voltage_in)
-
-        self.modes = {L1_BUTTON: self.rainbow, R1_BUTTON: self.remote, L2_BUTTON: self.maze, R2_BUTTON: self.follow}
+        self.straight_line_start = False
+        self.modes = {L1_BUTTON: self.rainbow, R1_BUTTON: self.remote, L2_BUTTON: self.maze, R2_BUTTON: self.straight}
         super().__init__()
 
     def run(self):
@@ -72,6 +72,8 @@ class Controller(Rainbow):
                     elif event.type == pygame.JOYBUTTONDOWN:
                         # A button on the joystick just got pushed down
                         self.mode = event.button
+                        if event.button == R2_BUTTON:
+                            self.straight_line_start = not self.straight_line_start
                 try:
                     self.modes[self.mode]()
                 except KeyError:
@@ -93,8 +95,14 @@ class Controller(Rainbow):
     def maze(self):
         LOGGER.debug("Maze mode")
 
-    def follow(self):
-        LOGGER.debug("Follow mode")
+    def straight(self):
+        LOGGER.debug("Straight mode")
+        if self.straight_line_start:
+            # start
+            self.bot.move(1.0, 1.0)
+        else:
+            # stop
+            self.bot.stop()
 
 
 

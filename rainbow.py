@@ -22,7 +22,7 @@ class Colours(enum.Enum):
     GREEN = 4
 
 
-ranges = {Colours.RED2: {"low": (0, 158, 158), "high": (10, 255, 255)},
+ranges = {Colours.RED1: {"low": (0, 158, 158), "high": (10, 255, 255)},
           Colours.RED: {"low": (150, 128, 0), "high": (230, 255, 255)},
           Colours.GREEN: {"low": (35,127, 127), "high": (75, 255, 255)},
           Colours.YELLOW: {"low": (75,127, 127), "high": (107, 255, 255)},
@@ -91,6 +91,7 @@ class Rainbow(object):
         # Yellow is... to be found!
         imrange = cv2.inRange(image, np.array(ranges[colour]["low"]), np.array(ranges[colour]["high"]))
 
+        cv2.erode(imrange, )
         # I used the following code to find the approximate 'hue' of the ball in
         # front of the camera
         #        for crange in range(0,170,10):

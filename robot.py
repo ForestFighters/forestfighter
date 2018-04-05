@@ -29,6 +29,10 @@ class Robot(object):
         else:
             self.right_motor.backward (-right_drive)
 
+    def stop(self):
+        self.left_motor.stop()
+        self.right_motor.stop()
+
 
 class CamJamBot(Robot): 
     def __init__(self):
