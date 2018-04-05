@@ -1,6 +1,7 @@
 import enum
 import time
 import picamera
+import threading
 import picamera.array
 import numpy as np
 import cv2
@@ -49,11 +50,10 @@ class Rainbow(object):
 
     def rainbow(self):
         stream = picamera.array.PiRGBArray(self.camera)
-        try:
-            self.camera.capture_sequence(stream, format='bgr', use_video_port=True)
-        except StopIteration:
-            stream.seek(0)
-            for colour in Colours:
+        event = threading.Event()
+        capStream = ImageCapture(self.camera, stream, event)
+        for colour in Colours:
+            if event.wait(1):
                 self.process(stream.array, colour)
                 # eroded = cv2.erode(range, )
                 LOGGER.debug(colour)
@@ -61,6 +61,7 @@ class Rainbow(object):
                 #self.camera.capture('foo.jpg')
                 range_data = ranges[colour]
                 LOGGER.debug(range_data)
+        capStream.terminated = True
 
     def process(self, image, colour, debug=False):
         if debug:
