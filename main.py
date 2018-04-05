@@ -10,6 +10,11 @@ from joystick import Joystick
 from argparse import ArgumentParser
 import logging
 
+L1_BUTTON = 6
+L2_BUTTON = 8
+R1_BUTTON = 7
+R2_BUTTON = 9
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -55,7 +60,22 @@ def main(amybot=True, camjambot=False):
                     break
                 elif event.type == pygame.JOYBUTTONDOWN:
                     # A button on the joystick just got pushed down
-                    print(event.__dict__)
+                    if event.button == L1_BUTTON:
+                        # L1
+                        print("l1")
+                        pass
+                    if event.button == R1_BUTTON:
+                        # R1
+                        print("r1")
+                        pass
+                    if event.button == R2_BUTTON:
+                        # L2
+                        print("r2")
+                        pass
+                    if event.button ==L2_BUTTON:
+                        # R2
+                        print("l2")
+                        pass
                     had_event = True
                 elif event.type == pygame.JOYAXISMOTION:
                     # A joystick has been moved
