@@ -29,8 +29,6 @@ class Rainbow(object):
     def __init__(self):
         self.camera = picamera.PiCamera()
         self.camera.resolution = (640, 480)
-        self.camera.brightness = 50
-        self.camera.framerate = 24
         # warm up
         time.sleep(2)
         # Camera.set(CV_CAP_PROP_FORMAT, CV_8UC3);
