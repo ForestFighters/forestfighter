@@ -1,6 +1,23 @@
 import threading
 import picamera
 import cv2
+import numpy
+import enum
+
+debug = True
+
+class Colours(enum.Enum):
+    RED = 0
+    RED1 = 1
+    BLUE = 2
+    YELLOW = 3
+    GREEN = 4
+
+ranges = {Colours.RED: {"low": (0, 158, 158), "high": (10, 255, 255)},
+          Colours.RED1: {"low": (150, 128, 0), "high": (230, 255, 255)},
+          Colours.BLUE: {"low": (35,127, 127), "high": (75, 255, 255)},
+          Colours.YELLOW: {"low": (75,127, 127), "high": (107, 255, 255)},
+          Colours.GREEN: {"low": (20,85,150), "high": (35, 255, 255)}}
 
 class StreamProcessor(threading.Thread):
     def __init__(self, camera):
@@ -51,12 +68,7 @@ class StreamProcessor(threading.Thread):
         # Green is between 50 and 75
         # Blue is between 20 and 35
         # Yellow is... to be found!
-        if colour == "red":
-            imrange = cv2.inRange(image, numpy.array((95, 127, 64)), numpy.array((125, 255, 255)))
-        elif colour == "green":
-            imrange = cv2.inRange(image, numpy.array((50, 127, 64)), numpy.array((75, 255, 255)))
-        elif colour == 'blue':
-            imrange = cv2.inRange(image, numpy.array((20, 64, 64)), numpy.array((35, 255, 255)))
+        imrange = cv2.inRange(image, numpy.array(ranges[colour]["low"]), numpy.array(ranges[colour]["high"]))
 
         # I used the following code to find the approximate 'hue' of the ball in
         # front of the camera
@@ -100,33 +112,34 @@ class StreamProcessor(threading.Thread):
     # Set the motor speed from the ball position
     def SetSpeedFromBall(self, ball):
         global TB
-        driveLeft = 0.0
-        driveRight = 0.0
-        if ball:
-            x = ball[0]
-            area = ball[2]
-            if area < autoMinArea:
-                print('Too small / far')
-            elif area > autoMaxArea:
-                print('Close enough')
-            else:
-                if area < autoFullSpeedArea:
-                    speed = 1.0
-                else:
-                    speed = 1.0 / (area / autoFullSpeedArea)
-                speed *= autoMaxPower - autoMinPower
-                speed += autoMinPower
-                direction = (x - imageCentreX) / imageCentreX
-                if direction < 0.0:
-                    # Turn right
-                    print('Turn Right')
-                    driveLeft = speed
-                    driveRight = speed * (1.0 + direction)
-                else:
-                    # Turn left
-                    print('Turn Left')
-                    driveLeft = speed * (1.0 - direction)
-                    driveRight = speed
-                print('%.2f, %.2f' % (driveLeft, driveRight))
-        else:
-            print('No ball')
+        pass
+        # driveLeft = 0.0
+        # driveRight = 0.0
+        # if ball:
+        #     x = ball[0]
+        #     area = ball[2]
+        #     if area < autoMinArea:
+        #         print('Too small / far')
+        #     elif area > autoMaxArea:
+        #         print('Close enough')
+        #     else:
+        #         if area < autoFullSpeedArea:
+        #             speed = 1.0
+        #         else:
+        #             speed = 1.0 / (area / autoFullSpeedArea)
+        #         speed *= autoMaxPower - autoMinPower
+        #         speed += autoMinPower
+        #         direction = (x - imageCentreX) / imageCentreX
+        #         if direction < 0.0:
+        #             # Turn right
+        #             print('Turn Right')
+        #             driveLeft = speed
+        #             driveRight = speed * (1.0 + direction)
+        #         else:
+        #             # Turn left
+        #             print('Turn Left')
+        #             driveLeft = speed * (1.0 - direction)
+        #             driveRight = speed
+        #         print('%.2f, %.2f' % (driveLeft, driveRight))
+        # else:
+        #     print('No ball')
