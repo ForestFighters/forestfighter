@@ -98,3 +98,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     controller = Controller(args.amybot, args.camjambot)
+    controller.run()
