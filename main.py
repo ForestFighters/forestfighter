@@ -20,7 +20,6 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Controller(object):
-    MODES = {L1_BUTTON: self.rainbow, R1_BUTTON: self.remote, L2_BUTTON: self.maze, R2_BUTTON: self.follow}
     MODE = R1_BUTTON
 
     def __init__(self, cambot=False, amybot=True):
@@ -45,6 +44,8 @@ class Controller(object):
             max_power = 1.0
         else:
             max_power = voltage_out / float(voltage_in)
+
+        self.modes = {L1_BUTTON: self.rainbow, R1_BUTTON: self.remote, L2_BUTTON: self.maze, R2_BUTTON: self.follow}
 
     def run(self):
         try:
