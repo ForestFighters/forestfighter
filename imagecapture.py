@@ -25,3 +25,4 @@ class ImageCapture(threading.Thread):
             else:
                 yield self.stream
                 self.event.set()
+        print(self.terminated)

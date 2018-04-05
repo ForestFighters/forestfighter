@@ -15,9 +15,9 @@ class Colours(enum.Enum):
 
 ranges = {Colours.RED: {"low": (0, 158, 158), "high": (10, 255, 255)},
           Colours.RED1: {"low": (150, 128, 0), "high": (230, 255, 255)},
-          Colours.BLUE: {"low": (35,127, 127), "high": (75, 255, 255)},
+          Colours.BLUE: {"low": (20,85,150), "high": (35, 255, 255)},
           Colours.YELLOW: {"low": (75,127, 127), "high": (107, 255, 255)},
-          Colours.GREEN: {"low": (20,85,150), "high": (35, 255, 255)}}
+          Colours.GREEN: {"low": (35, 127, 127), "high": (75, 255, 255)}}
 
 class StreamProcessor(threading.Thread):
     def __init__(self, camera):
