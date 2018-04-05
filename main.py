@@ -48,6 +48,7 @@ def main(amybot=True, camjambot=False):
             events = pygame.event.get()
             # Handle each event individually
             for event in events:
+                print(event)
                 if event.type == pygame.QUIT:
                     # User exit
                     running = False
