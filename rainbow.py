@@ -1,6 +1,7 @@
 import enum
 import time
 import picamera
+import picamera.array
 import numpy as np
 import cv2
 from time import sleep
