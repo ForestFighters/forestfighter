@@ -49,15 +49,17 @@ class Rainbow(object):
 
     def rainbow(self):
         stream = picamera.array.PiRGBArray(self.camera)
-        self.camera.capture_sequence(stream, format='bgr', use_video_port=True)
-        for colour in Colours:
-            self.process(stream.array, colour)
-            # eroded = cv2.erode(range, )
-            LOGGER.debug(colour)
-            sleep(2)
-            #self.camera.capture('foo.jpg')
-            range_data = ranges[colour]
-            LOGGER.debug(range_data)
+        try:
+            self.camera.capture_sequence(stream, format='bgr', use_video_port=True)
+        except StopIteration:
+            for colour in Colours:
+                self.process(stream.array, colour)
+                # eroded = cv2.erode(range, )
+                LOGGER.debug(colour)
+                sleep(2)
+                #self.camera.capture('foo.jpg')
+                range_data = ranges[colour]
+                LOGGER.debug(range_data)
 
     def process(self, image, colour, debug=False):
         if debug:
