@@ -55,6 +55,7 @@ def main(amybot=True, camjambot=False):
                     break
                 elif event.type == pygame.JOYBUTTONDOWN:
                     # A button on the joystick just got pushed down
+                    print(event.__dict__)
                     had_event = True
                 elif event.type == pygame.JOYAXISMOTION:
                     # A joystick has been moved
