@@ -80,21 +80,23 @@ class Controller(object):
             LOGGER.debug('Motors off')
 
     def rainbow(self):
-        pass
+        LOGGER.debug("Rainbow mode")
 
     def remote(self):
+        LOGGER.debug("Remote mode")
         left_drive, right_drive = self.joystick.get_reading()
         self.bot.move(left_drive, right_drive)
 
     def maze(self):
-        pass
+        LOGGER.debug("Maze mode")
 
     def follow(self):
-        pass
+        LOGGER.debug("Follow mode")
 
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     parser = ArgumentParser()
     # either amybot or camjambot can be passed in, but not both.
     group = parser.add_mutually_exclusive_group()
