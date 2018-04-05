@@ -37,6 +37,7 @@ MODES = {L1_BUTTON: rainbow, R1_BUTTON: remote, L2_BUTTON: maze, R2_BUTTON: foll
 
 
 def main(amybot=True, camjambot=False):
+    MODE = R1_BUTTON
     joystick = Joystick()
     # if elsing this because the init methods of both classes do stuff with hardware, so best to only intiailise deliberately
     if amybot:
