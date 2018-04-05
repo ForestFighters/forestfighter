@@ -77,7 +77,7 @@ def main(amybot=True, camjambot=False):
                 elif event.type == pygame.JOYBUTTONDOWN:
                     # A button on the joystick just got pushed down
                     MODE = event.button
-                modes[MODE]()
+                MODES[MODE]()
             time.sleep(interval)
 
     except KeyboardInterrupt:
