@@ -54,13 +54,18 @@ class Rainbow(object):
         capStream = ImageCapture(self.camera, stream, event)
         for colour in Colours:
             if event.wait(1):
-                self.process(stream.array, colour)
-                # eroded = cv2.erode(range, )
-                LOGGER.debug(colour)
-                sleep(2)
-                #self.camera.capture('foo.jpg')
-                range_data = ranges[colour]
-                LOGGER.debug(range_data)
+                try:
+                    self.process(stream.array, colour, debug=True)
+                    # eroded = cv2.erode(range, )
+                    LOGGER.debug(colour)
+                    sleep(2)
+                    #self.camera.capture('foo.jpg')
+                    range_data = ranges[colour]
+                    LOGGER.debug(range_data)
+                finally:
+                    stream.seek(0)
+                    stream.truncate()
+                    event.clear()
         capStream.terminated = True
 
     def process(self, image, colour, debug=False):
