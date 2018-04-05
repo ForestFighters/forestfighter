@@ -14,9 +14,26 @@ L1_BUTTON = 6
 L2_BUTTON = 8
 R1_BUTTON = 7
 R2_BUTTON = 9
+MODE = 7
+
 
 
 LOGGER = logging.getLogger(__name__)
+
+def rainbow():
+    pass
+
+def remote():
+    left_drive, right_drive = joystick.get_reading()
+    bot.move(left_drive, right_drive)
+
+def maze():
+    pass
+
+def follow():
+    pass
+
+MODES = {L1_BUTTON: rainbow, R1_BUTTON: remote, L2_BUTTON: maze, R2_BUTTON: follow}
 
 
 def main(amybot=True, camjambot=False):
@@ -53,37 +70,14 @@ def main(amybot=True, camjambot=False):
             events = pygame.event.get()
             # Handle each event individually
             for event in events:
-                print(event)
                 if event.type == pygame.QUIT:
                     # User exit
                     running = False
                     break
                 elif event.type == pygame.JOYBUTTONDOWN:
                     # A button on the joystick just got pushed down
-                    if event.button == L1_BUTTON:
-                        # L1
-                        print("l1")
-                        pass
-                    if event.button == R1_BUTTON:
-                        # R1
-                        print("r1")
-                        pass
-                    if event.button == R2_BUTTON:
-                        # L2
-                        print("r2")
-                        pass
-                    if event.button ==L2_BUTTON:
-                        # R2
-                        print("l2")
-                        pass
-                    had_event = True
-                elif event.type == pygame.JOYAXISMOTION:
-                    # A joystick has been moved
-                    had_event = True
-                if had_event:
-                    # Read axis positions (-1 to +1) + determine how much to move by
-                    left_drive, right_drive = joystick.get_reading()
-                    bot.move(left_drive, right_drive)
+                    MODE = event.button
+                modes[MODE]()
             time.sleep(interval)
 
     except KeyboardInterrupt:
