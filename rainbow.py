@@ -50,6 +50,7 @@ class Rainbow(object):
         for colour in Colours:
             image = np.empty((640 * 480 * 3,), dtype=np.uint8)
             self.camera.capture(image, 'bgr')
+            image = image.reshape((640, 480, 3))
             cv2.imshow('normal', image)
             range = cv2.inRange(image, np.array(ranges[colour]["low"]), np.array(ranges[colour]["high"]))
             cv2.imshow('range', range)
