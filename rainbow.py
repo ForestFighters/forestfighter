@@ -52,6 +52,7 @@ class Rainbow(object):
         try:
             self.camera.capture_sequence(stream, format='bgr', use_video_port=True)
         except StopIteration:
+            stream.seek(0)
             for colour in Colours:
                 self.process(stream.array, colour)
                 # eroded = cv2.erode(range, )
