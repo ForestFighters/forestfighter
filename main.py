@@ -21,7 +21,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Controller(object):
-    MODE = R1_BUTTON
+    mode = R1_BUTTON
 
     def __init__(self, cambot=False, amybot=True):
         self.joystick = Joystick()
