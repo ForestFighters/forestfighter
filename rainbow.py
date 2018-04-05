@@ -52,7 +52,7 @@ class Rainbow(object):
             self.camera.capture(image, 'bgr')
             image = image.reshape((640, 480, 3))
             range = cv2.inRange(image, np.array(ranges[colour]["low"]), np.array(ranges[colour]["high"]))
-            cv2.imshow(range)
+            cv2.imshow('range', range)
             cv2.waitKey(0)
             # eroded = cv2.erode(range, )
             LOGGER.debug(colour)
