@@ -66,7 +66,11 @@ class Controller(object):
                     elif event.type == pygame.JOYBUTTONDOWN:
                         # A button on the joystick just got pushed down
                         self.mode = event.button
-                self.modes[self.mode]()
+                try:
+                    self.modes[self.mode]()
+                except KeyError:
+                    LOGGER.warning("No mode set for key %i", self.mode)
+                    self.mode = R1_BUTTON
                 time.sleep(INTERVAL)
 
         except KeyboardInterrupt:
