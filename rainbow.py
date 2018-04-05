@@ -4,18 +4,16 @@ from time import sleep
 
 class Colours(enum.Enum):
     RED = 0
-    BLUE = 1
-    YELLOW = 2
-    GREEN = 3
+    RED1 = 1
+    BLUE = 2
+    YELLOW = 3
+    GREEN = 4
 
-low_hue =  [0, 150, 35, 75, 20]		# red was 150 green was 40
-high_hue = [ 10, 230, 75, 107, 35 ]	# red was 179 green was 85
-
-low_sat = [ 158, 128, 127, 127, 85 ]
-high_sat = [ 255, 255, 255, 255, 255 ]
-
-low_v = [158, 0, 127, 127, 150]
-high_v = [255, 255, 255, 255, 255]
+ranges = {Colours.RED: {"hue": (0, 10), "sat": (158,255), "variance": (158,255)},
+          Colours.RED1: {"hue": (150, 230), "sat": (128,255), "variance": (0,255)},
+          Colours.BLUE: {"hue": (35,75), "sat": (127,255), "variance": (127,255)},
+          Colours.YELLOW: {"hue": (75,107), "sat": (127,255), "variance": (127,255)},
+          Colours.GREEN: {"hue": (20,35), "sat": (85,255), "variance": (150,255)}}
 
 class Rainbow(object):
     order = []
@@ -36,8 +34,10 @@ class Rainbow(object):
         # }
 
     def rainbow(self):
-        self.camera.start_preview()
-        # Camera warm-up time
-        sleep(2)
-        self.camera.capture('foo.jpg')
+        for colour in Colours:
+            print(colour.name)
+            sleep(2)
+            self.camera.capture('foo.jpg')
+            range_data = ranges[colour]
+            print(range_data)
 
