@@ -9,6 +9,11 @@ from robot import AmyBot, CamJamBot
 from joystick import Joystick
 from argparse import ArgumentParser
 import logging
+from time import sleep
+from picamera import PiCamera
+from rainbow import Rainbow
+
+
 
 L1_BUTTON = 6
 L2_BUTTON = 8
@@ -20,7 +25,7 @@ INTERVAL = 0.0
 LOGGER = logging.getLogger(__name__)
 
 
-class Controller(object):
+class Controller(Rainbow):
     mode = R1_BUTTON
 
     def __init__(self, cambot=False, amybot=True):
@@ -47,6 +52,7 @@ class Controller(object):
             max_power = voltage_out / float(voltage_in)
 
         self.modes = {L1_BUTTON: self.rainbow, R1_BUTTON: self.remote, L2_BUTTON: self.maze, R2_BUTTON: self.follow}
+        super().__init__()
 
     def run(self):
         try:
@@ -78,9 +84,6 @@ class Controller(object):
             # LeftMotor.speed(0)
             # RightMotor.speed(0)
             LOGGER.debug('Motors off')
-
-    def rainbow(self):
-        LOGGER.debug("Rainbow mode")
 
     def remote(self):
         LOGGER.debug("Remote mode")
