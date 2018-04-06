@@ -26,8 +26,10 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     # either amybot or camjambot can be passed in, but not both.
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("--amybot", help="Use the kit amy has (whatever Jim provided)")
-    group.add_argument("--camjambot", help="Use the camjam edubot kit")
+    #group.add_argument("--amybot", help="Use the kit amy has (whatever Jim provided)")
+    #group.add_argument("--camjambot", help="Use the camjam edubot kit")
+    group.add_argument("--amybot", help="Use the kit amy has (whatever Jim provided)", action="store_true")
+    group.add_argument("--camjambot", help="Use the camjam edubot kit", action="store_true")
     args = parser.parse_args()
 
     main(args.amybot, args.camjambot)

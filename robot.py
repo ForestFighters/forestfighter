@@ -27,7 +27,7 @@ class Robot(object):
         if right_drive >= 0:
             self.right_motor.forward(right_drive)
         else:
-            self.right_motor.backward (-right_drive)
+            self.right_motor.backward(-right_drive)
 
     def stop(self):
         self.left_motor.stop()
@@ -45,6 +45,7 @@ class AmyBot(Robot):
         self.enable_right = LED(22)
         self.enable_left.off()
         self.enable_right.off()
-        super().__init__(left_a_pin=18, left_b_pin=27, right_a_pin=23, right_b_pin=24)
+        #super().__init__(left_a_pin=18, left_b_pin=27, right_a_pin=23, right_b_pin=24)
+        super().__init__(left_a_pin=24, left_b_pin=23, right_a_pin=27, right_b_pin=18)
         self.enable_left.on()
         self.enable_right.on()

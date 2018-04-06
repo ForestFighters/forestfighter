@@ -28,13 +28,15 @@ LOGGER = logging.getLogger(__name__)
 class Controller(Rainbow):
     mode = R1_BUTTON
 
-    def __init__(self, cambot=False, amybot=True):
+    def __init__(self, amybot=True, cambot=False):
         self.joystick = Joystick()
         # if elsing this because the init methods of both classes do stuff with hardware, so best to only intiailise deliberately
         if amybot:
             self.bot = AmyBot()
+            LOGGER.info('Enable AmyBot')
         else:
             self.bot = CamJamBot()
+            LOGGER.info('Enable CamJamBot')
 
         # Re-direct our output to standard error, we need to ignore standard out to hide some nasty print statements from pygame
         sys.stdout = sys.stderr
