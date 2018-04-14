@@ -12,7 +12,8 @@ import logging
 from time import sleep
 from picamera import PiCamera
 from rainbow import Rainbow
-
+from grove_oled import OLED
+import grovepi
 
 
 L1_BUTTON = 6
@@ -29,6 +30,7 @@ class Controller(Rainbow):
     mode = R1_BUTTON
 
     def __init__(self, amybot=True, cambot=False):
+        self.oled = OLED()
         self.joystick = Joystick()
         # if elsing this because the init methods of both classes do stuff with hardware, so best to only intiailise deliberately
         if amybot:
@@ -54,6 +56,7 @@ class Controller(Rainbow):
             max_power = voltage_out / float(voltage_in)
         self.straight_line_start = False
         self.modes = {L1_BUTTON: self.rainbow, R1_BUTTON: self.remote, L2_BUTTON: self.maze, R2_BUTTON: self.straight}
+        self.oled.putString("Remote")
         super().__init__()
 
     def run(self):
@@ -91,14 +94,20 @@ class Controller(Rainbow):
 
     def remote(self):
         LOGGER.debug("Remote mode")
+        if self.oled.data != "Remote":
+            self.oled.putString("Remote")
         left_drive, right_drive = self.joystick.get_reading()
         self.bot.move(left_drive, right_drive)
 
     def maze(self):
+        if self.oled.data != "Maze":
+            self.oled.putString("Maze")
         LOGGER.debug("Maze mode")
 
     def straight(self):
         LOGGER.debug("Straight mode")
+        if self.oled.data != "Straight":
+            self.oled.putString("Straight")
         if self.straight_line_start:
             # start
             self.bot.move(1.0, 1.0)
@@ -106,6 +115,19 @@ class Controller(Rainbow):
             # stop
             self.bot.stop()
 
+    def read_distance(self):
+
+        # Connect the Grove Ultrasonic Ranger to digital port D7
+        # SIG,NC,VCC,GND
+        ultrasonic_ranger = 7
+        try:
+            # Read distance value from Ultrasonic
+            return grovepi.ultrasonicRead(ultrasonic_ranger)
+
+        except TypeError:
+            print("Error")
+        except IOError:
+            print("Error")
 
 
 if __name__ == '__main__':

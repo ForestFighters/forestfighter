@@ -50,17 +50,6 @@ import time
 import math
 import struct
 
-if sys.platform == 'uwp':
-    import winrt_smbus as smbus
-    bus = smbus.SMBus(1)
-else:
-    import smbus
-    import RPi.GPIO as GPIO
-    rev = GPIO.RPI_REVISION
-    if rev == 2 or rev == 3:
-        bus = smbus.SMBus(1)
-    else:
-        bus = smbus.SMBus(0)
 
 grayH= 0xF0
 grayL= 0x0F
@@ -169,116 +158,127 @@ BasicFont=[[0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00],
 [0x00,0x02,0x01,0x01,0x02,0x01,0x00,0x00],
 [0x00,0x02,0x05,0x05,0x02,0x00,0x00,0x00]]
 
-def sendCommand(byte):
-    try:
-        block=[]
-        block.append(byte)
-        return bus.write_i2c_block_data(address,Command_Mode,block)
-    except IOError:
-        print("IOError")
-        return -1
 
-def sendData(byte):
-    try:
-        block=[]
-        block.append(byte)
-        return bus.write_i2c_block_data(address,Data_mode,block)
-    except IOError:
-        print("IOError")
-        return -1
+class OLED(object):
+    def __init__(self):
+        if sys.platform == 'uwp':
+            import winrt_smbus as smbus
+            self.bus = smbus.SMBus(1)
+        else:
+            import smbus
+            import RPi.GPIO as GPIO
+            rev = GPIO.RPI_REVISION
+            if rev == 2 or rev == 3:
+                self.bus = smbus.SMBus(1)
+            else:
+                self.bus = smbus.SMBus(0)
+        blk = [0xFD]  # Unlock OLED driver IC MCU interface from entering command. i.e: Accept commands
+        blk.append(0x12)
+        blk.append(0xAE)  # Set display off
+        blk.append(0xA8)  # set multiplex ratio
+        blk.append(0x5F)  # 96
+        blk.append(0xA1)  # set display start line
+        blk.append(0x00)
+        blk.append(0xA2)  # set display offset
+        blk.append(0x60)
+        blk.append(0xA0)  # set remap
+        blk.append(0x46)
+        blk.append(0xAB)  # set vdd internal
+        blk.append(0x01)  #
+        blk.append(0x81)  # set contrasr
+        blk.append(0x53)  # 100 nit
+        blk.append(0xB1)  # Set Phase Length
+        blk.append(0X51)  #
+        blk.append(0xB3)  # Set Display Clock Divide Ratio/Oscillator Frequency
+        blk.append(0x01)
+        blk.append(0xB9)  #
+        blk.append(0xBC)  # set pre_charge voltage/VCOMH
+        blk.append(0x08)  # (0x08)
+        blk.append(0xBE)  # set VCOMH
+        blk.append(0X07)  # (0x07)
+        blk.append(0xB6)  # Set second pre-charge period
+        blk.append(0x01)  #
+        blk.append(0xD5)  # enable second precharge and enternal vsl
+        blk.append(0X62)  # (0x62)
+        blk.append(0xA4)  # Set Normal Display Mode
+        blk.append(0x2E)  # Deactivate Scroll
+        blk.append(0xAF)  # Switch on display
+        self.multi_comm(blk)
+        time.sleep(.1)
 
-def multi_comm(commands):
-    for c in commands:
-        sendCommand(c)
+        # Row Address
+        blk = [0x75]  # Set Row Address
+        blk.append(0x00)  # Start 0
+        blk.append(0x5f)  # End 95
+        # Column Address
+        blk.append(0x15)  # Set Column Address
+        blk.append(0x08)  # Start from 8th Column of driver IC. This is 0th Column for OLED
+        blk.append(0x37)  # End at  (8 + 47)th column. Each Column has 2 pixels(segments)
+        self.multi_comm(blk)
 
-# Init function of the OLED
-def oled_init():
-    blk=[0xFD]       # Unlock OLED driver IC MCU interface from entering command. i.e: Accept commands
-    blk.append(0x12)
-    blk.append(0xAE) # Set display off
-    blk.append(0xA8) # set multiplex ratio
-    blk.append(0x5F) # 96
-    blk.append(0xA1) # set display start line
-    blk.append(0x00)
-    blk.append(0xA2) # set display offset
-    blk.append(0x60)
-    blk.append(0xA0) # set remap
-    blk.append(0x46)
-    blk.append(0xAB) # set vdd internal
-    blk.append(0x01) #
-    blk.append(0x81) # set contrasr
-    blk.append(0x53) # 100 nit
-    blk.append(0xB1) # Set Phase Length
-    blk.append(0X51) #
-    blk.append(0xB3) # Set Display Clock Divide Ratio/Oscillator Frequency
-    blk.append(0x01)
-    blk.append(0xB9) #
-    blk.append(0xBC) # set pre_charge voltage/VCOMH
-    blk.append(0x08) # (0x08)
-    blk.append(0xBE) # set VCOMH
-    blk.append(0X07) # (0x07)
-    blk.append(0xB6) # Set second pre-charge period
-    blk.append(0x01) #
-    blk.append(0xD5) # enable second precharge and enternal vsl
-    blk.append(0X62) # (0x62)
-    blk.append(0xA4) # Set Normal Display Mode
-    blk.append(0x2E) # Deactivate Scroll
-    blk.append(0xAF) # Switch on display
-    multi_comm(blk)
-    time.sleep(.1)
+    def sendCommand(self, byte):
+        try:
+            block=[byte]
+            return self.bus.write_i2c_block_data(address,Command_Mode,block)
+        except IOError:
+            print("IOError")
+            return -1
 
-    # Row Address
-    blk=[0x75]       # Set Row Address
-    blk.append(0x00) # Start 0
-    blk.append(0x5f) # End 95
-    # Column Address
-    blk.append(0x15) # Set Column Address
-    blk.append(0x08) # Start from 8th Column of driver IC. This is 0th Column for OLED
-    blk.append(0x37) # End at  (8 + 47)th column. Each Column has 2 pixels(segments)
-    multi_comm(blk)
+    def sendData(self, byte):
+        try:
+            block=[byte]
+            return self.bus.write_i2c_block_data(address,Data_mode,block)
+        except IOError:
+            print("IOError")
+            return -1
 
-def oled_clearDisplay():
-    for j in range (0,48):
-        for i in range (0,96):
-            sendData(0x00)
+    def multi_comm(self, commands):
+        for c in commands:
+            self.sendCommand(c)
 
-def oled_setNormalDisplay():
-    sendCommand(Normal_Display_Cmd)
+    def clear(self):
+        for j in range (0,48):
+            for i in range (0,96):
+                self.sendData(0x00)
 
-def oled_setVerticalMode():
-    sendCommand(0xA0)    # remap to
-    sendCommand(0x46)    # Vertical mode
+    def setNormalDisplay(self):
+        self.sendCommand(Normal_Display_Cmd)
 
-def oled_setTextXY(Row,Column):
-    sendCommand(0x15)             # Set Column Address
-    sendCommand(0x08+(Column*4))  # Start Column: Start from 8
-    sendCommand(0x37)             # End Column
-    # Row Address
-    sendCommand(0x75)             # Set Row Address
-    sendCommand(0x00+(Row*8))     # Start Row
-    sendCommand(0x07+(Row*8))     # End Row
+    def setVerticalMode(self):
+        self.sendCommand(0xA0)    # remap to
+        self.sendCommand(0x46)    # Vertical mode
 
-def oled_putChar(C):
-    C_add=ord(C)
-    if C_add<32 or C_add>127:     # Ignore non-printable ASCII characters
-        C=' '
+    def setTextXY(self, Row,Column):
+        self.sendCommand(0x15)             # Set Column Address
+        self.sendCommand(0x08+(Column*4))  # Start Column: Start from 8
+        self.sendCommand(0x37)             # End Column
+        # Row Address
+        self.sendCommand(0x75)             # Set Row Address
+        self.sendCommand(0x00+(Row*8))     # Start Row
+        self.sendCommand(0x07+(Row*8))     # End Row
+
+    def putChar(self, C):
         C_add=ord(C)
+        if C_add<32 or C_add>127:     # Ignore non-printable ASCII characters
+            C=' '
+            C_add=ord(C)
 
-    for i in range(0,8,2):
-        for j in range(0,8):
-            c=0x00
-            bit1=((BasicFont[C_add-32][i])>>j)&0x01
-            bit2=((BasicFont[C_add-32][i+1])>>j)&0x01
-            if bit1:
-                c=c|grayH
-            else:
-                c=c|0x00
-            if bit2:
-                c=c|grayL
-            else:
-                c=c|0x00
-            sendData(c)
+        for i in range(0,8,2):
+            for j in range(0,8):
+                c=0x00
+                bit1=((BasicFont[C_add-32][i])>>j)&0x01
+                bit2=((BasicFont[C_add-32][i+1])>>j)&0x01
+                if bit1:
+                    c=c|grayH
+                else:
+                    c=c|0x00
+                if bit2:
+                    c=c|grayL
+                else:
+                    c=c|0x00
+                self.sendData(c)
 
-def oled_putString(String):
-    for i in range(len(String)):
-        oled_putChar(String[i])
+    def putString(self, String):
+        self.data = String
+        for i in range(len(String)):
+            self.putChar(String[i])
