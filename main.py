@@ -57,6 +57,7 @@ class Controller(Rainbow):
         self.straight_line_start = False
         self.modes = {L1_BUTTON: self.rainbow, R1_BUTTON: self.remote, L2_BUTTON: self.maze, R2_BUTTON: self.straight}
         self.oled.putString("Remote")
+        self.length = 30
         super().__init__()
 
     def run(self):
@@ -103,20 +104,31 @@ class Controller(Rainbow):
         if self.oled.data != "Maze":
             self.oled.putString("Maze")
         LOGGER.debug("Maze mode")
+        while True:
+            data = self.read_distance()
+            if data < self.length:
+                self.bot.move(1.0, 0.0)
+            else:
+                self.bot.move(1.0, 1.0)
 
     def straight(self):
         LOGGER.debug("Straight mode")
-        if self.oled.data != "Straight":
-            self.oled.putString("Straight")
-        if self.straight_line_start:
-            # start
+        while self.straight_line_start:
             self.bot.move(1.0, 1.0)
-        else:
-            # stop
-            self.bot.stop()
+            data = self.read_distance()
+            mv_left = 1.0
+            mv_right = 0.0
+            while data < self.length:
+                self.bot.stop()
+                new_data = self.read_distance()
+                if new_data < data:
+                    mv_left = 0.0
+                    mv_right = 1.0
+                self.bot.move(mv_left, mv_right)
+                data = self.read_distance()
+
 
     def read_distance(self):
-
         # Connect the Grove Ultrasonic Ranger to digital port D7
         # SIG,NC,VCC,GND
         ultrasonic_ranger = 7
