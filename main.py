@@ -30,7 +30,7 @@ class Controller(Rainbow, Sonar):
 
     def __init__(self, amybot=True, cambot=False, fourtronix=False, straight=False):
         Sonar.__init__(self)
-        Rainbow.__init__(self)
+        # Rainbow.__init__(self)
         print ("Hello!")
         self.last_text = "Bleurgh!"
         self.joystick = Joystick()
@@ -57,7 +57,11 @@ class Controller(Rainbow, Sonar):
         interval = 0.0
 
         self.straight_line_start = False
-        self.modes = {L1_BUTTON: self.rainbow, R1_BUTTON: self.remote, L2_BUTTON: self.maze, R2_BUTTON: self.straight}
+        self.modes = {
+            # L1_BUTTON: self.rainbow,
+            R1_BUTTON: self.remote,
+            L2_BUTTON: self.maze,
+            R2_BUTTON: self.straight}
         super().__init__()
 
     def run(self):
