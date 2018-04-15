@@ -116,6 +116,8 @@ class Controller(Rainbow, Sonar):
         new_power = (power - (gap / 100))
         if new_power > 1.0:
             new_power = 1.0
+        if new_power < -1.0:
+            new_power = -1.0
         return new_power
 
     def straight(self):
