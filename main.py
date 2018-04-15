@@ -113,6 +113,10 @@ class Controller(Rainbow, Sonar):
         self.show("Maze mode")
 
     def adjust_power(self, power, gap):
+        print(power)
+        print(gap)
+        print(gap/100)
+        print(power - (gap/100))
         return (power - (gap / 100))
 
     def straight(self):
