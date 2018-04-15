@@ -13,6 +13,7 @@ from time import sleep
 from picamera import PiCamera
 from rainbow import Rainbow
 import grove_oled
+import grovepi
 
 
 L1_BUTTON = 6  # L1 rainbow
@@ -91,24 +92,57 @@ class Controller(Rainbow):
         except KeyboardInterrupt:
             # CTRL+C exit, disable all drives
             self.bot.move(0, 0)
-            self.show ('Motors off')
+            self.show('Motors off')
 
     def remote(self):
-        self.show ("Remote mode")
+        self.show("Remote mode")
         left_drive, right_drive = self.joystick.get_reading()
         self.bot.move(left_drive, right_drive)
 
     def maze(self):
-        self.show ("Maze mode")
+        self.show("Maze mode")
+
+    def adjust_power(self, power, gap):
+        return (power - (gap / 100))
 
     def straight(self):
-        self.show ("Line mode")
-        if self.straight_line_start:
-            # start
-            self.bot.move(1.0, 1.0)
-        else:
-            # stop
-            self.bot.stop()
+        self.show("Line mode")
+        ranger = 8
+        left_power = 1.0
+        right_power = 1.0
+        led = 4
+        grovepi.pinMode(led, "OUTPUT")
+        starttime = time.time()
+        while self.straight_line_start:
+            try:
+                if ledOn == 1 and time.time() - starttime > 1.0:
+                    ledOn = 0
+                    starttime = time.time()
+                elif ledOn == 0 and time.time() - starttime > 1.0:
+                    ledOn = 1
+                    starttime = time.time()
+
+                grovepi.digitalWrite(led, ledOn)
+                # Read distance value from Ultrasonic
+                dist = grovepi.ultrasonicRead(ranger)
+                print("dist: ", dist)
+                if (dist < 80):
+                    left_power = self.adjust_power(left_power, 80 - dist)
+                elif (dist > 100):
+                    right_power = self.adjust_power(right_power, 100 - dist)
+                else:
+                    left_power = 1.0
+                    right_power = 1.0
+
+                sleep(0.1)
+                print(left_power, right_power)
+                self.bot.move(left_power, right_power)
+
+            except TypeError:
+                print("Type Error")
+            except IOError:
+                print("IO Error")
+        self.bot.stop()
 
     def show(self, text):
         LOGGER.debug(text)
