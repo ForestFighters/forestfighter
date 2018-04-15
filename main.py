@@ -153,7 +153,7 @@ if __name__ == '__main__':
     group.add_argument("--amybot", help="Use the kit amy has (whatever Jim provided)", action="store_true")
     group.add_argument("--camjambot", help="Use the camjam edubot kit", action="store_true")    
     group.add_argument("--fourtronix", help="Use the 4tronix controller", action="store_true")
-    parser.add_argument("--straight", help="go straight into straight line mode on start")
+    parser.add_argument("--straight", help="go straight into straight line mode on start", action="store_true")
     args = parser.parse_args()
 
     controller = Controller(args.amybot, args.camjambot, args.fourtronix, args.straight)
