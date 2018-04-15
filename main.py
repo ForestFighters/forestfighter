@@ -47,15 +47,18 @@ class Controller(Rainbow, Sonar):
         else:
             print("Unknown Robot Type")
             sys.exit(0)
+
+        self.straight_line_start = False
         if straight:
             self.mode = R2_BUTTON
+            self.straight_line_start = True
 
         # Re-direct our output to standard error, we need to ignore standard out to hide some nasty print statements from pygame
         sys.stdout = sys.stderr
 
         interval = 0.0
 
-        self.straight_line_start = False
+
         self.modes = {
             # L1_BUTTON: self.rainbow,
             R1_BUTTON: self.remote,
