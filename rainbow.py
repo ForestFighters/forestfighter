@@ -91,7 +91,6 @@ class Rainbow(object):
         # Yellow is... to be found!
         imrange = cv2.inRange(image, np.array(ranges[colour]["low"]), np.array(ranges[colour]["high"]))
 
-        cv2.erode(imrange, )
         # I used the following code to find the approximate 'hue' of the ball in
         # front of the camera
         #        for crange in range(0,170,10):

@@ -14,6 +14,7 @@ from picamera import PiCamera
 from rainbow import Rainbow
 from grove_oled import OLED
 import grovepi
+import threading
 
 
 L1_BUTTON = 6
@@ -94,8 +95,9 @@ class Controller(Rainbow):
             LOGGER.debug('Motors off')
 
     def remote(self):
-        LOGGER.debug("Remote mode")
+
         if self.oled.data != "Remote":
+            LOGGER.debug("Remote mode")
             self.oled.putString("Remote")
         left_drive, right_drive = self.joystick.get_reading()
         self.bot.move(left_drive, right_drive)
@@ -112,20 +114,26 @@ class Controller(Rainbow):
                 self.bot.move(1.0, 1.0)
 
     def straight(self):
-        LOGGER.debug("Straight mode")
+        if self.oled.data != "Straight":
+            self.oled.putString("Straight")
+            LOGGER.debug("Straight mode")
         while self.straight_line_start:
-            self.bot.move(1.0, 1.0)
+            # may want to do threading here if this is non-reactive
+            self.straight_action()
+
+    def straight_action(self):
+        self.bot.move(1.0, 1.0)
+        data = self.read_distance()
+        mv_left = 1.0
+        mv_right = 0.0
+        while data < self.length:
+            self.bot.stop()
+            new_data = self.read_distance()
+            if new_data < data:
+                mv_left = 0.0
+                mv_right = 1.0
+            self.bot.move(mv_left, mv_right)
             data = self.read_distance()
-            mv_left = 1.0
-            mv_right = 0.0
-            while data < self.length:
-                self.bot.stop()
-                new_data = self.read_distance()
-                if new_data < data:
-                    mv_left = 0.0
-                    mv_right = 1.0
-                self.bot.move(mv_left, mv_right)
-                data = self.read_distance()
 
 
     def read_distance(self):
