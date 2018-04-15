@@ -15,10 +15,10 @@ from rainbow import Rainbow
 import grove_oled
 
 
-L1_BUTTON = 6
-L2_BUTTON = 8
-R1_BUTTON = 7
-R2_BUTTON = 9
+L1_BUTTON = 6  # L1 rainbow
+L2_BUTTON = 8  # R1 remote
+R1_BUTTON = 7  # L2 maze
+R2_BUTTON = 9  # R2 straight
 INTERVAL = 0.0
 
 
@@ -114,9 +114,9 @@ class Controller(Rainbow):
         LOGGER.debug(text)
 
         if text != self.last_text:
-            grove_oled.oled_clearDisplay()
+            #grove_oled.oled_clearDisplay()
             grove_oled.oled_setTextXY(0,0)
-            grove_oled.oled_putString(text)
+            grove_oled.oled_putString(text.center(12))
             self.last_text = text
 
 
