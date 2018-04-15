@@ -28,7 +28,7 @@ LOGGER = logging.getLogger(__name__)
 class Controller(Rainbow, Sonar):
     mode = R1_BUTTON
 
-    def __init__(self, amybot=True, cambot=False, fourtronix=False):
+    def __init__(self, amybot=True, cambot=False, fourtronix=False, straight=False):
         Sonar.__init__(self)
         Rainbow.__init__(self)
         print ("Hello!")
@@ -46,7 +46,10 @@ class Controller(Rainbow, Sonar):
             LOGGER.info('Enable FourTronixBot')
         else:
             print("Unknown Robot Type")
-            sys.exit(0)        
+            sys.exit(0)
+        self.straight = True
+        if self.straight:
+            self.mode = R2_BUTTON
 
         # Re-direct our output to standard error, we need to ignore standard out to hide some nasty print statements from pygame
         sys.stdout = sys.stderr
@@ -150,7 +153,8 @@ if __name__ == '__main__':
     group.add_argument("--amybot", help="Use the kit amy has (whatever Jim provided)", action="store_true")
     group.add_argument("--camjambot", help="Use the camjam edubot kit", action="store_true")    
     group.add_argument("--fourtronix", help="Use the 4tronix controller", action="store_true")
+    parser.add_argument("--straight", help="go straight into straight line mode on start")
     args = parser.parse_args()
 
-    controller = Controller(args.amybot, args.camjambot, args.fourtronix)
+    controller = Controller(args.amybot, args.camjambot, args.fourtronix, args.straight)
     controller.run()
