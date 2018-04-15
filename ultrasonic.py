@@ -34,17 +34,61 @@ THE SOFTWARE.
 '''
 
 import grovepi
+import time
+import sys
+from robot import FourTronix
+import logging
 
-# Connect the Grove Ultrasonic Ranger to digital port D7
-# SIG,NC,VCC,GND
-ultrasonic_ranger = 7
+def adjust_power(power, gap):
+    return(power - (gap / 100))
+    
+    
 
-while True:
-    try:
-        # Read distance value from Ultrasonic
-        print(grovepi.ultrasonicRead(ultrasonic_ranger))
+def main():
+    # Blue led on D4
+    led = 4
+    grovepi.pinMode(led,"OUTPUT")
+    # Right sensor D8, Left sensor D7, Middle sensor D5
+    # SIG,NC,VCC,GND
+    ranger = 8
+    left_power = 1.0
+    right_power = 1.0
 
-    except TypeError:
-        print ("Error")
-    except IOError:
-        print ("Error")
+    bot = FourTronix()
+    
+    ledOn = 1
+    starttime=time.time()
+    while True:
+        try:            
+            if ledOn == 1 and time.time() - starttime > 1.0:
+                ledOn = 0
+                starttime = time.time()
+            elif ledOn == 0 and time.time() - starttime > 1.0:
+                ledOn = 1
+                starttime = time.time()
+				
+            grovepi.digitalWrite(led,ledOn)
+            print("Version: ", grovepi.version())
+            # Read distance value from Ultrasonic
+            dist = grovepi.ultrasonicRead(ranger)
+            print("dist: ",dist)
+            if( dist < 80 ):
+                left_power = adjust_power(left_power, 80 - dist )
+            elif( dist > 100 ):
+                right_power = adjust_power(right_power, 100 - dist )
+            else:
+                left_power = 1.0
+                right_power = 1.0
+                
+            sleep(0.1)
+            print( left_power, right_power )
+            bot.move(left_power, right_power)                
+
+        except TypeError:
+            print ("Type Error")
+        except IOError:
+            print ("IO Error")
+        
+        
+if __name__ == '__main__':
+    main()

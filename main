@@ -1,0 +1,3 @@
+cd /home/pi/forestfighter
+echo "Start Main" >/tmp/log
+/usr/bin/python main.py --fourtronix >>/tmp/log

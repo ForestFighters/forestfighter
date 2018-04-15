@@ -5,20 +5,20 @@
 import time
 import sys
 import pygame
-from robot import AmyBot, CamJamBot
+from robot import AmyBot, CamJamBot, FourTronix
 from joystick import Joystick
 from argparse import ArgumentParser
 import logging
 from time import sleep
 from picamera import PiCamera
 from rainbow import Rainbow
+import grove_oled
 
 
-
-L1_BUTTON = 6
-L2_BUTTON = 8
-R1_BUTTON = 7
-R2_BUTTON = 9
+L1_BUTTON = 6  # L1 rainbow
+L2_BUTTON = 8  # R1 remote
+R1_BUTTON = 7  # L2 maze
+R2_BUTTON = 9  # R2 straight
 INTERVAL = 0.0
 
 
@@ -28,35 +28,40 @@ LOGGER = logging.getLogger(__name__)
 class Controller(Rainbow):
     mode = R1_BUTTON
 
-    def __init__(self, amybot=True, cambot=False):
+    def __init__(self, amybot=True, cambot=False, fourtronix=False):
+        print ("Hello!")
+        self.last_text = "Bleurgh!"
         self.joystick = Joystick()
         # if elsing this because the init methods of both classes do stuff with hardware, so best to only intiailise deliberately
         if amybot:
             self.bot = AmyBot()
             LOGGER.info('Enable AmyBot')
-        else:
+        elif cambot:
             self.bot = CamJamBot()
             LOGGER.info('Enable CamJamBot')
+        elif fourtronix:
+            self.bot = FourTronix()
+            LOGGER.info('Enable FourTronixBot')
+        else:
+            print("Unknown Robot Type")
+            sys.exit(0)        
 
         # Re-direct our output to standard error, we need to ignore standard out to hide some nasty print statements from pygame
         sys.stdout = sys.stderr
 
         interval = 0.0
 
-        # Power settings
-        voltage_in = 6.0  # Total battery voltage to the PicoBorg Reverse
-        voltage_out = 5.0  # * 0.95                # Maximum motor voltage, we limit it to 95% to allow the RPi to get uninterrupted power
-
-        # Setup the power limits
-        if voltage_out > voltage_in:
-            max_power = 1.0
-        else:
-            max_power = voltage_out / float(voltage_in)
         self.straight_line_start = False
         self.modes = {L1_BUTTON: self.rainbow, R1_BUTTON: self.remote, L2_BUTTON: self.maze, R2_BUTTON: self.straight}
         super().__init__()
 
     def run(self):
+        grove_oled.oled_init()
+        grove_oled.oled_clearDisplay()
+        grove_oled.oled_setNormalDisplay()
+        grove_oled.oled_setVerticalMode()
+        self.show ("Amybot!")
+        
         try:
             LOGGER.info('Press CTRL+C to quit')
             running = True
@@ -85,20 +90,19 @@ class Controller(Rainbow):
 
         except KeyboardInterrupt:
             # CTRL+C exit, disable all drives
-            # LeftMotor.speed(0)
-            # RightMotor.speed(0)
-            LOGGER.debug('Motors off')
+            self.bot.move(0, 0)
+            self.show ('Motors off')
 
     def remote(self):
-        LOGGER.debug("Remote mode")
+        self.show ("Remote mode")
         left_drive, right_drive = self.joystick.get_reading()
         self.bot.move(left_drive, right_drive)
 
     def maze(self):
-        LOGGER.debug("Maze mode")
+        self.show ("Maze mode")
 
     def straight(self):
-        LOGGER.debug("Straight mode")
+        self.show ("Line mode")
         if self.straight_line_start:
             # start
             self.bot.move(1.0, 1.0)
@@ -106,16 +110,26 @@ class Controller(Rainbow):
             # stop
             self.bot.stop()
 
+    def show(self, text):
+        LOGGER.debug(text)
+
+        if text != self.last_text:
+            #grove_oled.oled_clearDisplay()
+            grove_oled.oled_setTextXY(0,0)
+            grove_oled.oled_putString(text.center(12))
+            self.last_text = text
+
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     parser = ArgumentParser()
-    # either amybot or camjambot can be passed in, but not both.
+    # either fortronix, amybot or camjambot can be passed in, but only one
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--amybot", help="Use the kit amy has (whatever Jim provided)", action="store_true")
-    group.add_argument("--camjambot", help="Use the camjam edubot kit", action="store_true")
+    group.add_argument("--camjambot", help="Use the camjam edubot kit", action="store_true")    
+    group.add_argument("--fourtronix", help="Use the 4tronix controller", action="store_true")
     args = parser.parse_args()
 
-    controller = Controller(args.amybot, args.camjambot)
+    controller = Controller(args.amybot, args.camjambot, args.fourtronix)
     controller.run()

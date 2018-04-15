@@ -33,6 +33,14 @@ class Robot(object):
         self.left_motor.stop()
         self.right_motor.stop()
 
+# Use pwm on inputs
+# Pins 19, 21 Right Motor or BCM 10, 9
+# Pins 24, 26 Left Motor  or BCM  8,  7
+class FourTronix(Robot):
+    def __init__(self):
+        #super().__init__(left_a_pin=9, left_b_pin=10, right_a_pin=8, right_b_pin=7)
+        super().__init__(left_a_pin=7, left_b_pin=8, right_a_pin=10, right_b_pin=9)
+    
 
 class CamJamBot(Robot): 
     def __init__(self):
