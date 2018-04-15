@@ -10,10 +10,9 @@ from joystick import Joystick
 from argparse import ArgumentParser
 import logging
 from time import sleep
-from picamera import PiCamera
 from rainbow import Rainbow
 import grove_oled
-import grovepi
+from sonar import Sonar
 
 
 L1_BUTTON = 6  # L1 rainbow
@@ -26,10 +25,12 @@ INTERVAL = 0.0
 LOGGER = logging.getLogger(__name__)
 
 
-class Controller(Rainbow):
+class Controller(Rainbow, Sonar):
     mode = R1_BUTTON
 
     def __init__(self, amybot=True, cambot=False, fourtronix=False):
+        Sonar.__init__(self)
+        Rainbow.__init__(self)
         print ("Hello!")
         self.last_text = "Bleurgh!"
         self.joystick = Joystick()
@@ -107,25 +108,11 @@ class Controller(Rainbow):
 
     def straight(self):
         self.show("Line mode")
-        ranger = 8
         left_power = 1.0
         right_power = 1.0
-        led = 4
-        grovepi.pinMode(led, "OUTPUT")
-        starttime = time.time()
         while self.straight_line_start:
             try:
-                if ledOn == 1 and time.time() - starttime > 1.0:
-                    ledOn = 0
-                    starttime = time.time()
-                elif ledOn == 0 and time.time() - starttime > 1.0:
-                    ledOn = 1
-                    starttime = time.time()
-
-                grovepi.digitalWrite(led, ledOn)
-                # Read distance value from Ultrasonic
-                dist = grovepi.ultrasonicRead(ranger)
-                print("dist: ", dist)
+                dist = self.get_distance()
                 if (dist < 80):
                     left_power = self.adjust_power(left_power, 80 - dist)
                 elif (dist > 100):
