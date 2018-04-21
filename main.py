@@ -111,6 +111,31 @@ class Controller(Rainbow, Sonar):
 
     def maze(self):
         self.show("Maze mode")
+        left_power = 1.0
+        right_power = 1.0
+        running = True
+        section = 0
+        while running:
+            try:
+                dist = self.get_distance()
+                if (dist < 80):
+                    left_power = self.adjust_power(left_power, dist)
+                    right_power = self.adjust_power(right_power, 100 - dist)
+                else:
+                    section += 1
+                    left_power = 1.0
+                    right_power = 1.0
+
+                sleep(0.1)
+                print(left_power, right_power)
+                self.bot.move(left_power, right_power)
+                if section == 4:
+                    running = False
+            except TypeError:
+                print("Type Error")
+            except IOError:
+                print("IO Error")
+        self.bot.stop()
 
     def adjust_power(self, power, gap):
         new_power = (power - (gap / 100))
